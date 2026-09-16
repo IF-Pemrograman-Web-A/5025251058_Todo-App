@@ -1,4 +1,4 @@
-# Todo App - [E01] The Style Warrior
+# Todo App - [E02b] The Style Warrior
 
 ## Identitas
 - **Nama:** [Shine Lee Romenzio Tarigan]
