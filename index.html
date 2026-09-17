@@ -9,51 +9,28 @@
 <body>
     <header>
         <h1>Shine`s ToDo APP</h1>
+        <button id="theme-toggle" class="theme-btn">Toggle Dark Mode</button>
     </header>
 
-<div class="layout-container">
+    <div class="layout-container">
         <main>
             <section class="todo-list-container">
                 <h2>Task List</h2>
-                <ul class="todo-list">
-                    <li>
-                        <div class="todo-item">
-                            <input type="checkbox" id="todo1">
-                            <label for="todo1">Learn HTML Semantic Elements</label>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="todo-item">
-                            <input type="checkbox" id="todo2" checked>
-                            <label for="todo2">Master CSS Flexbox</label>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="todo-item">
-                            <input type="checkbox" id="todo3">
-                            <label for="todo3">Build a Responsive Layout</label>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="todo-item">
-                            <input type="checkbox" id="todo4">
-                            <label for="todo4">Integrate External Styles</label>
-                        </div>
-                    </li>
+                <ul class="todo-list" id="todo-list">
                 </ul>
             </section>
         </main>
 
-<aside>
+        <aside>
             <section class="todo-detail-container">
                 <h2>Task Details</h2>
-                <div class="detail-card">
-                    <h3>Master CSS Flexbox</h3>
-                    <p class="status"><strong>Status:</strong> Completed</p>
-                    <p class="due-date"><strong>Due:</strong> Tomorrow</p>
-                    <p class="description">Review flex-direction, align-items, and justify-content properties to build the side-by-side layout.</p>
+                <div class="detail-card" id="detail-card">
+                    <h3>Pilih task buat lihat detailnya</h3>
+                    <p class="status"><strong>Status:</strong> -</p>
+                    <p class="due-date"><strong>Due:</strong> -</p>
+                    <p class="description">Deskripsi akan muncul di sini.</p>
                 </div>
-</section>
+            </section>
             
             <section class="todo-form-container">
                 <h2>Create New Task</h2>
@@ -66,14 +43,13 @@
                         <label for="description">Description</label>
                         <textarea id="description" name="description" placeholder="Enter task details..."></textarea>
                     </div>
-                    <button type="button">Add Todo</button>
+                    <button type="button" id="add-btn">Add Todo</button>
                 </form>
             </section>
         </aside>
     </div>
 
-<footer>
+    <footer>
         <p>&copy; 2026 The Style Warrior - Todo List</p>
-</footer>
-</body>
-</html>
+    </footer>
+    <script src="script.js"></script>
