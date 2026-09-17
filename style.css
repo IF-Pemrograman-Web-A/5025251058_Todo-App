@@ -4,7 +4,6 @@
     padding: 0;
 }
 
-/* Transisi buat dark mode biar smooth */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
@@ -180,11 +179,6 @@ footer {
     margin-top: auto;
 }
 
-/* =========================================
-   TAMBAHAN CSS BUAT FITUR JAVASCRIPT
-========================================= */
-
-/* Action buttons (Edit & Delete) */
 .actions {
     display: flex;
     gap: 8px;
@@ -208,7 +202,6 @@ footer {
 
 .btn-delete:hover { background: #c0392b; }
 
-/* Theme toggle button */
 .theme-btn {
     width: auto;
     margin-top: 10px;
@@ -219,7 +212,7 @@ footer {
 
 .theme-btn:hover { background: #ecf0f1; }
 
-/* Dark Mode Styles */
+
 body.dark-mode {
     background-color: #1a1a2e;
     color: #e0e0e0;
