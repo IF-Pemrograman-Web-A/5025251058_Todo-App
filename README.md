@@ -11,7 +11,7 @@ Project ini adalah kelanjutan dari tugas pembuatan Todo List Webpage (sebelumnya
 Semua kriteria penugasan udah diterapkan, mulai dari manipulasi DOM buat nambahin task tanpa *refresh*, fitur edit dan hapus, *checkbox* buat nandain task selesai, simpan data ke objek, sampai fitur *toggle* untuk Dark Mode.
 
 ## Preview Tampilan
-*<img width="1901" height="947" alt="image" src="https://github.com/user-attachments/assets/3d2c4e08-c5e8-454a-9401-8fa43b6c5a5f" />*
+*<img width="1897" height="915" alt="image" src="https://github.com/user-attachments/assets/1ff31ca6-78ee-472e-ba70-97c89641d94c" />*
 
 ---
 
