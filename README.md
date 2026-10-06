@@ -22,4 +22,5 @@ Penting: Karena proyek ini menggunakan Service Worker dan Media Capture API, apl
 3. Izinkan *prompt* notifikasi dan kamera pada browser saat halaman pertama kali dimuat.
 
 ## Preview Tampilan
-*(Tambahkan URL gambar screenshot aplikasimu yang baru di sini)*
+<img width="1918" height="957" alt="image" src="https://github.com/user-attachments/assets/717b6e91-a636-47fb-8344-d124950677ef" />
+
