@@ -1,115 +1,178 @@
-const defaultTodos = [
-    { 
-        id: 1, 
-        title: "Learn HTML Semantic Elements", 
-        description: "Review header, main, aside, and footer elements.", 
-        status: false 
-    },
-    { 
-        id: 2, 
-        title: "Master CSS Flexbox", 
-        description: "Review flex-direction, align-items, and justify-content properties to build the side-by-side layout.", 
-        status: true 
-    }
-];
-
-let todos = [...defaultTodos];
-const todoList = document.getElementById('todo-list');
-const tombol = document.getElementById('add-btn');
-const judul = document.getElementById('title');
-const Deskripsi = document.getElementById('description');
-const dc = document.getElementById('detail-card');
-const tema = document.getElementById('theme-toggle');
-
-
-function renderTodos() {
-    todoList.innerHTML = '';
-    
-    todos.forEach(todo => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <div class="todo-item">
-                <input type="checkbox" id="todo-${todo.id}" ${todo.status ? 'checked' : ''} onchange="toggleStatus(${todo.id})">
-                <label for="todo-${todo.id}" onclick="showDetail(${todo.id})">${todo.title}</label>
-                <div class="actions">
-                    <button class="btn-edit" onclick="editTodo(${todo.id})">Edit</button>
-                    <button class="btn-delete" onclick="deleteTodo(${todo.id})">Delete</button>
-                </div>
-            </div>
-        `;
-        todoList.appendChild(li);
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker Registered'))
+            .catch(err => console.log('SW Registration failed: ', err));
     });
 }
+if ('Notification' in window) {
+    Notification.requestPermission();
+}
 
-tombol.addEventListener('click', () => {
-    const titleValue = judul.value.trim();
-    const descValue = Deskripsi.value.trim();
+const themeBtn = document.getElementById('theme-toggle');
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+}
 
-    if (titleValue !== '') {
-        const newTodo = {
-            id: Date.now(), 
-            title: titleValue,
-            description: descValue || "No description provided.",
-            status: false
-        };
-
-        todos.push(newTodo);
-    
-        judul.value = '';
-        Deskripsi.value = '';
-        renderTodos();
-    } else {
-        alert("Title nggak boleh kosong!");
-    }
+themeBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
 });
 
-window.toggleStatus = (id) => {
-    const todoIndex = todos.findIndex(t => t.id === id);
-    if (todoIndex !== -1) {
-        todos[todoIndex].status = !todos[todoIndex].status;
-        renderTodos();
-        showDetail(id); a
+let db;
+const request = indexedDB.open('TodoDB', 1);
+
+request.onupgradeneeded = (e) => {
+    db = e.target.result;
+    if (!db.objectStoreNames.contains('todos')) {
+        db.createObjectStore('todos', { keyPath: 'id', autoIncrement: true });
     }
 };
 
-window.deleteTodo = (id) => {
-    todos = todos.filter(t => t.id !== id);
-    renderTodos();
-    dc.innerHTML = `
-        <h3>Pilih task buat lihat detailnya</h3>
-        <p class="status"><strong>Status:</strong> -</p>
-        <p class="due-date"><strong>Due:</strong> -</p>
-        <p class="description">Deskripsi akan muncul di sini.</p>
-    `;
+request.onsuccess = (e) => {
+    db = e.target.result;
+    loadTodos();
+    checkNotifications();
 };
 
-window.editTodo = (id) => {
-    const todo = todos.find(t => t.id === id);
-    if (todo) {
-        const newTitle = prompt("Edit judul task:", todo.title);
-        
-        if (newTitle !== null && newTitle.trim() !== '') {
-            todo.title = newTitle.trim();
-            renderTodos();
-            showDetail(id); 
-        }
+request.onerror = (e) => console.error("IndexedDB Error", e);
+
+const form = document.getElementById('todo-form');
+const todoList = document.getElementById('todo-list');
+
+const fileToBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+    const notifyTime = document.getElementById('notify-time').value;
+    const imageInput = document.getElementById('image-capture');
+    
+    let imageData = null;
+    if (imageInput.files.length > 0) {
+        imageData = await fileToBase64(imageInput.files[0]);
     }
-};
+
+    const newTodo = {
+        title,
+        description,
+        notifyTime,
+        imageData,
+        completed: false,
+        notified: false
+    };
+
+    const tx = db.transaction('todos', 'readwrite');
+    const store = tx.objectStore('todos');
+    store.add(newTodo);
+    
+    tx.oncomplete = () => {
+        form.reset();
+        loadTodos();
+    };
+});
+
+function loadTodos() {
+    const tx = db.transaction('todos', 'readonly');
+    const store = tx.objectStore('todos');
+    const request = store.getAll();
+
+    request.onsuccess = () => {
+        todoList.innerHTML = '';
+        request.result.forEach(todo => {
+            const li = document.createElement('li');
+            li.className = 'todo-item';
+            
+            li.innerHTML = `
+                <input type="checkbox" id="task-${todo.id}" ${todo.completed ? 'checked' : ''} aria-label="Mark ${todo.title} as completed">
+                <label for="task-${todo.id}">${todo.title}</label>
+                <div class="actions">
+                    <button class="btn-edit" onclick="showDetail(${todo.id})" aria-label="View details for ${todo.title}">View</button>
+                    <button class="btn-delete" onclick="deleteTodo(${todo.id})" aria-label="Delete ${todo.title}">Del</button>
+                </div>
+            `;
+
+            li.querySelector('input').addEventListener('change', (e) => {
+                todo.completed = e.target.checked;
+                updateTodo(todo);
+            });
+
+            todoList.appendChild(li);
+        });
+    };
+}
+
+function updateTodo(todo) {
+    const tx = db.transaction('todos', 'readwrite');
+    tx.objectStore('todos').put(todo);
+    tx.oncomplete = loadTodos;
+}
+
+function deleteTodo(id) {
+    const tx = db.transaction('todos', 'readwrite');
+    tx.objectStore('todos').delete(id);
+    tx.oncomplete = loadTodos;
+}
 
 window.showDetail = (id) => {
-    const todo = todos.find(t => t.id === id);
-    if (todo) {
-        dc.innerHTML = `
-            <h3>${todo.title}</h3>
-            <p class="status"><strong>Status:</strong> ${todo.status ? 'Completed' : 'Pending'}</p>
-            <p class="description">${todo.description}</p>
-        `;
-    }
+    const tx = db.transaction('todos', 'readonly');
+    const request = tx.objectStore('todos').get(id);
+    
+    request.onsuccess = () => {
+        const todo = request.result;
+        if(todo) {
+            document.getElementById('detail-title').innerText = todo.title;
+            document.getElementById('detail-status').innerText = todo.completed ? 'Completed' : 'Pending';
+            document.getElementById('detail-time').innerText = todo.notifyTime ? new Date(todo.notifyTime).toLocaleString() : 'No notification set';
+            document.getElementById('detail-desc').innerText = todo.description || 'Tidak ada deskripsi.';
+            
+            const imgEl = document.getElementById('detail-img');
+            if (todo.imageData) {
+                imgEl.src = todo.imageData;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
+                imgEl.src = '';
+            }
+        }
+    };
 };
 
-tema.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-});
-
-
-renderTodos();
+function checkNotifications() {
+    setInterval(() => {
+        const now = new Date().getTime();
+        const tx = db.transaction('todos', 'readwrite');
+        const store = tx.objectStore('todos');
+        
+        store.getAll().onsuccess = (e) => {
+            const todos = e.target.result;
+            todos.forEach(todo => {
+                if (todo.notifyTime && !todo.notified) {
+                    const taskTime = new Date(todo.notifyTime).getTime();
+                    if (now >= taskTime) {
+                        if (navigator.serviceWorker.controller) {
+                            navigator.serviceWorker.ready.then(reg => {
+                                reg.showNotification("To-Do Reminder!", {
+                                    body: `Saatnya mengerjakan: ${todo.title}`,
+                                    icon: 'https://cdn-icons-png.flaticon.com/512/2387/2387679.png',
+                                    vibrate: [200, 100, 200]
+                                });
+                            });
+                        }
+                        
+                        todo.notified = true;
+                        store.put(todo);
+                    }
+                }
+            });
+        };
+    }, 30000);
+}
