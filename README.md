@@ -29,4 +29,7 @@ Karena proyek ini sekarang menggunakan PHP dan MySQL, aplikasi **wajib** dijalan
 
 ## Preview Tampilan
 <!-- Ganti link src di bawah dengan screenshot aplikasi terbarumu nanti -->
-<img width="1918" height="957" alt="image" src="https://github.com/user-attachments/assets/717b6e91-a636-47fb-8344-d124950677ef" />
+<img width="1919" height="919" alt="Screenshot 2026-10-08 133533" src="https://github.com/user-attachments/assets/33513ebd-b01e-486d-81a8-a9abaa10b7e3" />
+<img width="1919" height="919" alt="Screenshot 2026-10-08 133540" src="https://github.com/user-attachments/assets/b8304016-6b86-4ad2-984f-0c4993d350dd" />
+
+
