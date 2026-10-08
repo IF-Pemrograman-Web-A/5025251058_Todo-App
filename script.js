@@ -1,115 +1,124 @@
-const defaultTodos = [
-    { 
-        id: 1, 
-        title: "Learn HTML Semantic Elements", 
-        description: "Review header, main, aside, and footer elements.", 
-        status: false 
-    },
-    { 
-        id: 2, 
-        title: "Master CSS Flexbox", 
-        description: "Review flex-direction, align-items, and justify-content properties to build the side-by-side layout.", 
-        status: true 
-    }
-];
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .catch(err => console.log('SW Registration failed: ', err));
+    });
+}
+if ('Notification' in window) {
+    Notification.requestPermission();
+}
 
-let todos = [...defaultTodos];
+const themeBtn = document.getElementById('theme-toggle');
+if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+
+themeBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+});
+
+const form = document.getElementById('todo-form');
 const todoList = document.getElementById('todo-list');
-const tombol = document.getElementById('add-btn');
-const judul = document.getElementById('title');
-const Deskripsi = document.getElementById('description');
-const dc = document.getElementById('detail-card');
-const tema = document.getElementById('theme-toggle');
+let todosData = [];
 
+loadTodos();
+checkNotifications();
 
-function renderTodos() {
-    todoList.innerHTML = '';
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+
+    await fetch('crud.php?action=add', {
+        method: 'POST',
+        body: formData
+    });
     
-    todos.forEach(todo => {
+    form.reset();
+    loadTodos();
+});
+
+async function loadTodos() {
+    const response = await fetch(`crud.php?action=get&type=${CURRENT_TYPE}`);
+    todosData = await response.json();
+
+    todoList.innerHTML = '';
+    todosData.forEach(todo => {
         const li = document.createElement('li');
+        li.className = 'todo-item';
+        const isCompleted = parseInt(todo.completed) === 1;
+        
         li.innerHTML = `
-            <div class="todo-item">
-                <input type="checkbox" id="todo-${todo.id}" ${todo.status ? 'checked' : ''} onchange="toggleStatus(${todo.id})">
-                <label for="todo-${todo.id}" onclick="showDetail(${todo.id})">${todo.title}</label>
-                <div class="actions">
-                    <button class="btn-edit" onclick="editTodo(${todo.id})">Edit</button>
-                    <button class="btn-delete" onclick="deleteTodo(${todo.id})">Delete</button>
-                </div>
+            <input type="checkbox" id="task-${todo.id}" ${isCompleted ? 'checked' : ''}>
+            <label for="task-${todo.id}">${todo.title}</label>
+            <div class="actions">
+                <button type="button" class="btn-edit" onclick="showDetail(${todo.id})">View</button>
+                <button type="button" class="btn-delete" onclick="deleteTodo(${todo.id})">Del</button>
             </div>
         `;
+
+        li.querySelector('input').addEventListener('change', (e) => {
+            updateStatus(todo.id, e.target.checked);
+        });
+
         todoList.appendChild(li);
     });
 }
 
-tombol.addEventListener('click', () => {
-    const titleValue = judul.value.trim();
-    const descValue = Deskripsi.value.trim();
+async function updateStatus(id, isCompleted) {
+    await fetch('crud.php?action=update_status', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ id, completed: isCompleted })
+    });
+    loadTodos();
+}
 
-    if (titleValue !== '') {
-        const newTodo = {
-            id: Date.now(), 
-            title: titleValue,
-            description: descValue || "No description provided.",
-            status: false
-        };
-
-        todos.push(newTodo);
-    
-        judul.value = '';
-        Deskripsi.value = '';
-        renderTodos();
-    } else {
-        alert("Title nggak boleh kosong!");
+window.deleteTodo = async (id) => {
+    if(confirm("Yakin ingin menghapus task ini?")) {
+        await fetch('crud.php?action=delete', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ id })
+        });
+        loadTodos();
     }
-});
+}
 
-window.toggleStatus = (id) => {
-    const todoIndex = todos.findIndex(t => t.id === id);
-    if (todoIndex !== -1) {
-        todos[todoIndex].status = !todos[todoIndex].status;
-        renderTodos();
-        showDetail(id); a
-    }
-};
-
-window.deleteTodo = (id) => {
-    todos = todos.filter(t => t.id !== id);
-    renderTodos();
-    dc.innerHTML = `
-        <h3>Pilih task buat lihat detailnya</h3>
-        <p class="status"><strong>Status:</strong> -</p>
-        <p class="due-date"><strong>Due:</strong> -</p>
-        <p class="description">Deskripsi akan muncul di sini.</p>
-    `;
-};
-
-window.editTodo = (id) => {
-    const todo = todos.find(t => t.id === id);
-    if (todo) {
-        const newTitle = prompt("Edit judul task:", todo.title);
+window.showDetail = (id) => {
+    const todo = todosData.find(t => parseInt(t.id) === parseInt(id));
+    if(todo) {
+        document.getElementById('detail-title').innerText = todo.title;
+        document.getElementById('detail-status').innerText = parseInt(todo.completed) === 1 ? 'Completed' : 'Pending';
+        document.getElementById('detail-time').innerText = todo.notify_time ? new Date(todo.notify_time).toLocaleString() : 'No notification set';
+        document.getElementById('detail-desc').innerText = todo.description || 'Tidak ada deskripsi.';
         
-        if (newTitle !== null && newTitle.trim() !== '') {
-            todo.title = newTitle.trim();
-            renderTodos();
-            showDetail(id); 
+        const imgEl = document.getElementById('detail-img');
+        if (todo.image_path) {
+            imgEl.src = todo.image_path;
+            imgEl.style.display = 'block';
+        } else {
+            imgEl.style.display = 'none';
         }
     }
 };
 
-window.showDetail = (id) => {
-    const todo = todos.find(t => t.id === id);
-    if (todo) {
-        dc.innerHTML = `
-            <h3>${todo.title}</h3>
-            <p class="status"><strong>Status:</strong> ${todo.status ? 'Completed' : 'Pending'}</p>
-            <p class="description">${todo.description}</p>
-        `;
-    }
-};
-
-tema.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-});
-
-
-renderTodos();
+function checkNotifications() {
+    setInterval(() => {
+        const now = new Date().getTime();
+        todosData.forEach(todo => {
+            if (todo.notify_time && !todo.notified) {
+                const taskTime = new Date(todo.notify_time).getTime();
+                if (now >= taskTime) {
+                    if (navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.ready.then(reg => {
+                            reg.showNotification("To-Do Reminder!", {
+                                body: `Saatnya mengerjakan: ${todo.title}`,
+                                icon: 'https://cdn-icons-png.flaticon.com/512/2387/2387679.png',
+                            });
+                        });
+                    }
+                    todo.notified = true; 
+                }
+            }
+        });
+    }, 30000);
+}
