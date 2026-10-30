@@ -1,0 +1,8 @@
+{
+  "name": "shine-todo-e05",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Optional browser tests; app itself uses PHP and vanilla JavaScript.",
+  "scripts": {"test": "node tests/e05.cjs"},
+  "devDependencies": {"playwright": "1.62.1"}
+}

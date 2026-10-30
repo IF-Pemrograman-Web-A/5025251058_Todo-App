@@ -1,0 +1,18 @@
+{
+  "php": "8.3.6",
+  "database": "MariaDB 10.11.14",
+  "results": [
+    {
+      "name": "E04 schema migration preserves old task and assigns legacy ID; tables use InnoDB",
+      "status": "PASS"
+    },
+    {
+      "name": "Shell remains HTTP 200 while unavailable database returns structured HTTP 503 JSON",
+      "status": "PASS"
+    },
+    {
+      "name": "All PHP and JavaScript files pass syntax checks",
+      "status": "PASS"
+    }
+  ]
+}
