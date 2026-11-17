@@ -1,0 +1,70 @@
+{
+  "testedAt": "2026-10-30T13:44:38.133Z",
+  "base": "http://127.0.0.1:8080/todo-app/",
+  "browser": "156.0.8078.79",
+  "backend": "Actual PHP + MySQL-compatible MariaDB, no API mock",
+  "results": [
+    {
+      "name": "PHP shell, MySQL snapshot, IndexedDB and service worker ready",
+      "status": "PASS"
+    },
+    {
+      "name": "Chrome DevTools Protocol: valid manifest, real PNG dimensions, no installability errors",
+      "status": "PASS"
+    },
+    {
+      "name": "App shell, both task routes and offline fallback precached; API never cached",
+      "status": "PASS"
+    },
+    {
+      "name": "Online create persists to MySQL and titles render as plain text",
+      "status": "PASS"
+    },
+    {
+      "name": "Offline reload and first-time Shared navigation work with cached data",
+      "status": "PASS"
+    },
+    {
+      "name": "Offline create with image, complete and reload persist in IndexedDB",
+      "status": "PASS"
+    },
+    {
+      "name": "Offline delete is immediate and remains queued",
+      "status": "PASS"
+    },
+    {
+      "name": "Unknown offline navigation displays offline.html fallback",
+      "status": "PASS"
+    },
+    {
+      "name": "Reconnect drains outbox; image and completed status reach MySQL; offline delete reaches server",
+      "status": "PASS"
+    },
+    {
+      "name": "A separate browser context reads the synchronized server task",
+      "status": "PASS"
+    },
+    {
+      "name": "Repeated operation ID is applied once (safe response-loss retry)",
+      "status": "PASS"
+    },
+    {
+      "name": "API rejects invalid action, wrong method, empty title and forged image upload",
+      "status": "PASS"
+    },
+    {
+      "name": "Mobile layout has no horizontal overflow; dark mode persists",
+      "status": "PASS"
+    },
+    {
+      "name": "Install button provides manual browser instructions when native prompt is unavailable",
+      "status": "PASS"
+    },
+    {
+      "name": "No uncaught JavaScript page errors",
+      "status": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "nativeOSInstallation": "Not automated; confirm manually in Chrome/Edge"
+}

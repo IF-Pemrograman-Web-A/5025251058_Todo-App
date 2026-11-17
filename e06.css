@@ -1,0 +1,32 @@
+/* E06: priority labels and edit form controls */
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    background: #fff;
+    color: #333;
+}
+.priority-badge {
+    display: inline-block;
+    margin-left: 0.35rem;
+    padding: 0.12rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #edf2f7;
+    color: #4a5568;
+}
+.priority-low { background: #e6fffa; color: #276749; }
+.priority-medium { background: #fffaf0; color: #975a16; }
+.priority-high { background: #fff5f5; color: #c53030; }
+body.dark-mode .form-group select { background: #1a1a2e; color: #e0e0e0; border-color: #2a3d5e; }
+body.dark-mode .priority-badge { background: #2a3d5e; color: #e0e0e0; }
+body.dark-mode .priority-low { background: #164e3b; color: #b7f7d8; }
+body.dark-mode .priority-medium { background: #5b451c; color: #ffe2a8; }
+body.dark-mode .priority-high { background: #5b252b; color: #ffc4ca; }
+.form-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.form-actions > button { flex: 1 1 140px; }
+.form-actions > button[hidden] { display: none; }
