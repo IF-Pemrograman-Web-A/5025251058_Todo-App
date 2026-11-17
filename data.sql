@@ -22,4 +22,28 @@ CREATE TABLE IF NOT EXISTS todos (
   DEFAULT CHARSET=utf8mb4
   COLLATE=utf8mb4_unicode_ci;
 
--- Data awal bersifat opsional. Aplikasi dapat digunakan dengan tabel kosong.
+-- Data contoh untuk membantu demonstrasi E04.
+-- Kondisi NOT EXISTS mencegah data contoh ditambahkan berulang kali.
+INSERT INTO todos (title, description, completed, notify_time, image_path, todo_type)
+SELECT 'Menyelesaikan laporan praktikum',
+       'Rapikan hasil praktikum dan siapkan file untuk dikumpulkan.',
+       0, DATE_ADD(NOW(), INTERVAL 1 DAY), NULL, 'personal'
+WHERE NOT EXISTS (
+    SELECT 1 FROM todos WHERE title = 'Menyelesaikan laporan praktikum' AND todo_type = 'personal'
+);
+
+INSERT INTO todos (title, description, completed, notify_time, image_path, todo_type)
+SELECT 'Persiapan presentasi kelompok',
+       'Koordinasikan materi dan pembagian tugas dengan anggota kelompok.',
+       0, DATE_ADD(NOW(), INTERVAL 2 DAY), NULL, 'shared'
+WHERE NOT EXISTS (
+    SELECT 1 FROM todos WHERE title = 'Persiapan presentasi kelompok' AND todo_type = 'shared'
+);
+
+INSERT INTO todos (title, description, completed, notify_time, image_path, todo_type)
+SELECT 'Membaca materi JavaScript',
+       'Ulangi materi array, object, event listener, dan manipulasi DOM.',
+       1, NULL, NULL, 'personal'
+WHERE NOT EXISTS (
+    SELECT 1 FROM todos WHERE title = 'Membaca materi JavaScript' AND todo_type = 'personal'
+);
